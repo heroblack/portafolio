@@ -2,6 +2,14 @@
 
 Mi experiencia en el desarollo de web.
 
+# Dependencias de Desarrollo
+
+- npm install webpack --save-dev --save-exact
+- npm install webpack-cli -D -E
+- npm i -D css-loader style-loader
+- npm install mini-css-extract-plugin
+- npm install html-webpack-plugin
+
 # Multiple ssh key
 
 ```bash
