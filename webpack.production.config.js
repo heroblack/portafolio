@@ -1,36 +1,25 @@
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
+const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const TerserJSPlugin = require("terser-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 /* npx webpack  --entry ./index.js  --output ./bundle.js --mode development */
 module.exports = {
   entry: {
     app: path.resolve(__dirname, "src/js/index.js")
-    //precio: path.resolve(basePath, "../src/js/precio.js"),
-    //contacto: path.resolve(basePath, "../src/js/contacto.js")
+    //precio: path.resolve(__dirname, "../src/js/precio.js"),
+    //contacto: path.resolve(__dirname, "../src/js/contacto.js")
   },
+  //mode: "production",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "js/[name].[hash].js" /*nombre de bundel */,
-    publicPath: "http://localhost:9000/",
+    filename: "js/[name].[hash].dll.js" /*nombre de bundel */,
+    publicPath: "http://localhost:3001/",
     chunkFilename: "js/[id].[hash].js"
   },
-  mode: "development",
-  devServer: {
-    contentBase: path.resolve(__dirname, "dist"),
-    hot: true,
-    compress: true,
-    //host: "0.0.0.0",
-    port: 9000,
-    inline: true,
-    open: true
-    // publicPath: "dist/src/js/"
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src")
-    }
-  },
-
   module: {
     rules: [
       {
@@ -41,23 +30,21 @@ module.exports = {
       {
         test: /\.(jpg|png|gif|woff|eot|ttf|svg|mp4|webm)$/,
         use: {
-          loader: "file-loader",
+          loader: "url-loader",
           options: {
-            outputPath: "assets/"
+            limit: 1000,
+            name: "[hash].[ext]",
+            outputPath: "assets"
           }
-          // loader: "url-loader",
-          // options: {
-          //   limit: 90000
-          // }
         }
       },
       {
         test: /\.css$/,
         use: [
-          // {
-          //   loader: MiniCssExtractPlugin.loader
-          // },
-          "style-loader",
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+
           {
             loader: "css-loader",
             options: {
@@ -74,7 +61,9 @@ module.exports = {
           // {
           //   loader: MiniCssExtractPlugin.loader
           // },
-          "style-loader",
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
           "css-loader",
           "less-loader"
         ]
@@ -86,7 +75,9 @@ module.exports = {
           // {
           //   loader: MiniCssExtractPlugin.loader
           // },
-          "style-loader",
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
           "css-loader",
           "sass-loader"
         ]
@@ -98,7 +89,9 @@ module.exports = {
           // {
           //   loader: MiniCssExtractPlugin.loader
           // },
-          "style-loader",
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
           "css-loader",
           "stylus-loader"
         ]
@@ -106,33 +99,35 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
       hash: true,
       title: "plugins",
-      template: path.resolve(__dirname, "public/index.html"), // path.resolve(basePath, indexInput),
+      template: path.resolve(__dirname, "public/index.html"), // path.resolve(__dirname, indexInput),
       chunks: ["app"],
       filename: "index.html",
       templateParameters: {
         titulo: "Portafolio",
         encabezamiento: "Hola Mundo desde Webpack"
       }
-    })
-    // new MiniCssExtractPlugin({
-    //   filename: "css/[hash][name].css"
-    // })
-    /*
+    }),
+    new MiniCssExtractPlugin({
+      filename: "css/[name].[hash].css",
+      chunkFilename: "css/[id].[hash].css"
+    }),
+
     new webpack.DllReferencePlugin({
       manifest: require("./modules-manifest")
-    })*/
-  ]
-  /*
+    }),
+    new AddAssetHtmlPlugin({
+      filepath: path.resolve(__dirname, "dist/js/*.dll.js"),
+      outputPath: "js",
+      publicPath: "http://localhost:3001/js"
+    }),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ["**/app.*"]
+    })
+  ],
   optimization: {
-    splitChunks: {
-      chunks: "all",
-      minSize: 0,
-      name: "commons"
-    }
-  }*/
+    minimizer: [new TerserJSPlugin(), new OptimizeCSSAssetsPlugin()]
+  }
 };

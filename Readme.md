@@ -4,11 +4,21 @@ Mi experiencia en el desarollo de web.
 
 # Dependencias de Desarrollo
 
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/runtime": "^7.7.7",
+    "
+
 - npm install webpack --save-dev --save-exact
 - npm install webpack-cli -D -E
 - npm i -D css-loader style-loader
 - npm install mini-css-extract-plugin
 - npm install html-webpack-plugin
+- npm install -D babel-loader @babel/core @babel/plugin-proposal-class-properties
+  @babel/plugin-transform-runtime @babel/preset-env
+  @babel/preset-react
+- npm install -S @babel/runtime
+- npm i -D clean-webpack-plugin terser-webpack-plugin optimize-css-assets-webpack-plugin
 
 # Multiple ssh key
 

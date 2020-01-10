@@ -14,16 +14,6 @@ module.exports = {
     //contacto: path.resolve(basePath, "../src/js/contacto.js")
   },
   mode: "production",
-  devServer: {
-    contentBase: path.resolve(basePath, distPath),
-    //host: "0.0.0.0",
-    port: 8080,
-
-    compress: true,
-    hot: true,
-    inline: true,
-    open: true
-  },
   output: {
     path: path.resolve(basePath, distPath),
     filename: "js/[name].js" /*nombre de bundel */
@@ -31,9 +21,18 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         use: "babel-loader",
         exclude: "/node_modules/"
+      },
+      {
+        test: /\.(jpg|png|gif|woff|eot|ttf|svg|mp4|webm)$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 90000
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -41,7 +40,56 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader
           },
-          "css-loader"
+
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1
+            }
+          },
+          "postcss-loader"
+        ]
+      },
+
+      {
+        test: /\.less$/,
+        use: [
+          // {
+          //   loader: MiniCssExtractPlugin.loader
+          // },
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          "css-loader",
+          "less-loader"
+        ]
+      },
+
+      {
+        test: /\.scss$/,
+        use: [
+          // {
+          //   loader: MiniCssExtractPlugin.loader
+          // },
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          "css-loader",
+          "sass-loader"
+        ]
+      },
+
+      {
+        test: /\.styl$/,
+        use: [
+          // {
+          //   loader: MiniCssExtractPlugin.loader
+          // },
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          "css-loader",
+          "stylus-loader"
         ]
       }
     ]
@@ -60,7 +108,12 @@ module.exports = {
       }
     }),
     new MiniCssExtractPlugin({
-      filename: "css/[hash][name].css"
+      filename: "css/[hash][name].css",
+      chunkFilename: "css/[id].css"
+    }),
+
+    new webpack.DllReferencePlugin({
+      manifest: require("./modules-manifest")
     })
   ]
 };
